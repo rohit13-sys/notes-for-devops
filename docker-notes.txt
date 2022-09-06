@@ -1,0 +1,178 @@
+Create a new container using below command
+==============================================
+docker run -it ubuntu bin/bash
+------------------------------
+- "docker run" command provides all lanuching capabilities for docker to create a container.
+- we use `docker run` to create new containers.
+
+-i  : opens STDIN from the container
+-t  : tells docker to assign a terminal to the container.
+-it : provides interactive shell
+
+ubuntu : Is an image and also called as "stock image" or "base image".
+	This image will be downloaded from Docker hub when we run 'docker run'
+			  command first time.
+/bin/bash: 'shell program' that will be installed in the terminal.
+
+
+
+Docker Operations
+=====================================================
+for running a new image in a new container with a particular name
+docker run <image-name> --name <name>
+Note: Two containers can't have the same name.
+
+for start a stopped container
+docker start <image-name>/<container id>
+
+for stop the container
+docker stop <image-name>/<container id>
+
+for restarting a container
+docker restart <image-name>/<container id>
+
+for running a container in a detach mode
+docker run -d <image-name>/<container id>
+
+for attaching the output or logs of a running container
+docker attach <image-name>/<container id>
+
+for login into an already running container / Get an independent terminal from a container remotely (from Host)
+docker exec -it <image-name>/<container id> /bin/bash
+
+for seeing all running containers
+docker ps
+
+for seeing all containers which are already running or not
+docker ps -a
+Note : above command shows
+                - Image name from which container is created
+                - ID - container can be identified using short UUID, longer UUID Or name.
+                - Status of the container (Up / Exited)
+                - Name of the container
+
+for seeing all containers with specific status
+docker ps -f status=exited (Where Status can be exited/running)
+
+for deleting a container by giving it's name or ID
+docker rm <image-name>/<container id>
+
+for delete all (running/stopped) containers at once
+docker rm -f $(docker ps -a -q)
+
+Delete running containers only
+docker rm -f $(docker ps -q)
+
+for running a linux command remotely in a container
+docker exec -it <image-name>/<container id> <linux-command>
+
+Shortcut Keys
+	Ctrl + p + q - push a running container in background mode.
+	Ctrl + d -  short cut to 'stop' a container.
+
+
+
+Docker Stats
+==========================================================
+for display usage statistics of a container
+docker stats <container-name>
+docker stats --no-stream <container-name> ( Disable streaming stats and only pull the first result )
+docker stats --no-stream --all ( for all containers )
+
+for allocating memory for a container (below command allocates 1 GB RAM)
+docker run -it --name <image-name> -m 1g ubuntu /bin/bash
+docker run -it --name <image-name> -m 512m ubuntu /bin/bash
+docker update -m 2024m <image-name>/<container id> ( Updating memory of an existing container )
+
+for allocation CPU cores
+docker run -it --cpus="2" --name <image-name> ubuntu /bin/bash
+docker update --cpus="2" <image-name>/<container-Id> ( Updating CPU cores of an existing container )
+
+
+
+Image Operations
+=============================================================
+for listing docker images
+docker images
+Note : 1. Images live in '/var/lib/docker/image/overlay2/imagedb/content/<sha value>'
+       2. Containers live in '/var/lib/docker/containers'
+
+for deleting images
+docker rmi -f $(docker images -aq)
+Note : -f flag is used to remove running images
+
+
+
+Creating Image
+==============================================================
+We have 2 Ways to create docker image:
+		1. docker "commit"
+		2. docker "build" cmd & Dockerfile
+
+Approach 1
+    - create an empty or stock ubuntu container
+    - install all required apps and tools for project
+    - copy your project in that container
+    - Commit your container using command
+        - docker commit <image-name>/<container-id> <dockerhub-username>/<image-name>
+    - Check if image has been created
+        - docker image ls
+    - Push the newly created image to docker hub
+            - Create an account in 'https://hub.docker.com/'.
+            -After creating your account run following command in terminal
+    	        - docker login ( give your username and password )
+    	        - docker push <dockerhub-username>/<image-name>
+    Note : this image is static and user have to run project manually
+
+Approach 2
+    - Creating docker image using "docker build" command
+    - Write Dockerfile:
+    		FROM <OS image>
+    		MAINTAINER "your email id"
+    		RUN apt-get update
+    		RUN apt-get install -y <tools>
+    		ENV JAVA_HOME <path to java_home>
+    		COPY <your project code>
+    		ENTRYPOINT <command to run your project>
+
+    Note : 1. Docker file always start with FROM <OS Image> this will use to form an empty container with stock os
+           2. MAINTAINER is used to track that this image is made by whom
+           3. RUN is used to run any linux commands in a container
+           4. COPY is used to copy any file or project in a container from local system
+           5. ENTRYPOINT is used to create a run time environment in a container using project running commands
+                so that whenever user pulls an image it won't have to run project or code manually
+           6. ENV is used if you want to add any environment variables
+    - Build your docker image by running the command
+            docker build -t "<dockerhub-username>/<image-name>" . ( -t is used to tag and image )
+
+    Note: Building the image if 'Dockerfile' has different name.
+      	  Use "-f <YourDockerfileName>" option.
+      	  Example: docker build -f <MyDockerfile> -t="<dockerhub-username>/<image-name>" .
+
+
+
+Volumes
+=================================================================
+for creating a new Named Volume
+docker volume create <volume-name>
+
+for list all volumes available in host machine
+docker volume ls
+
+for mounting Volume to a new container
+docker run -it -v <volume-name>:<path/volume-name in a container> <image-name>
+
+for create 'Read-only' Volumes
+docker run -it -v <volume-name>:<path/volume-name in a container>:ro <image-name>
+Note : Read-Only volume can be written only from host machine
+
+for removing a Volume
+docker volume rm <volume-name>
+
+for removing all unused volumes
+docker volume prune
+
+for listing down all containers which are using a particular volume
+docker ps -a --filter volume=<volume-name>
+
+
