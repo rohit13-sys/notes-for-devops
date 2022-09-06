@@ -1,0 +1,118 @@
+Global credential configurations
+===================================================================================
+for configuring username and password globally in device
+git config --global user.name "your username"
+git config --global user.password "your password"
+
+for storing username and passwd globally
+git config --global credential.helper store
+
+for checking the configurations using below command
+git config --list
+
+Settng up token/password to access GitHub
+========================================
+1. go to https://github.com
+
+2. Generate token from GitHub
+click on user-profile icon (top right) .. click on 'settings' .. click on 'Developer settings' .. click on 'Personal access tokens' .. click on 'Generate new token' .. give a name under 'Note' (example:class) .. select 'No expiration' from 'Expiration' drop-down box .. click on 'repo' check box under 'Select scopes' .. and finally click on 'Generate token' button.
+
+3. Store the token in your machine using below command
+$ git remote set-url origin https://<username>:<token>@github.com/<repo path>
+
+
+Git operations
+=====================================================================================
+for cloning project in local
+git clone <project link>
+
+for add files for commit
+git add <file-name> or git add .(for all files)
+
+for commit files with message
+git commit -m "<message>"
+
+for push the git committed code or file
+git push
+
+for skipping add command and skip staging
+git commit -am "submit all pending changes"
+Note: If you want to skip the staging, you need to commit all pending changes.
+      For new file, you have to go through the 'stage' process.
+
+
+Git Logs/History
+=======================================================================================
+for git logs or commit history, and commit history with sha code
+git log
+
+for seeing who has committed and what is committed with sha
+git show <Commit ID>
+
+for seeing logs with particular username
+git log --author="<username>"
+
+for seeing logs with particular commit message
+git log --grep="<message>"
+
+for seeing logs with particular user and message
+git log --grep="<message>" --author="<username>"
+
+
+
+
+Git Commands
+=========================================================
+for seeing diff between git code and local code before stage
+git diff <filename.extension>
+
+for seeing diff between git repo code and staged code before commit
+git diff --staged <filename.extension>
+
+for removing file from repo
+git rm <filename>
+Note: It will automatically stage the changes , you just have to commit
+
+for getting previous commit from repo
+git commit --amend <commit Id>
+
+for deleting commit permanently from repo
+git reset --hard <previous commit ID>
+
+for rename a file
+git mv <source filename> <target filename>
+
+for seeing logs for previous file before renamed
+git log --follow <current filename>
+
+for unstagging the file after staging
+git reset HEAD <filename>
+
+for revert all changes in source code in local before staging changes
+git checkout -- <filename>
+Note: Once you revert the code then you will never get it back again
+
+
+Git Branching
+===============================================================================
+for seeing all branch lists
+git branch
+
+for getting fetch the changes but don't want to merge them with local source code
+git fetch
+Note: this command will store all changes in temporary directory
+
+for merging all changes from fetch command
+git merge
+Note: this command will work in offline mode also bcoz changes are already fetched from main repo
+
+for seeing which are the changes will come after fetch command in temp directory
+git fetch --dry-run
+Note: this command will give you commit id you have to execute git show <commit id> to see changes
+
+for seeing all changes which will come after git pull command
+git fetch &&  git diff  --name-only ..origin
+
+for deleting or editing your commands
+git rebase -i <commit id>
+Note : commit id will be your that commit that this and before this commits you want to keep it
